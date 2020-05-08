@@ -50,7 +50,7 @@ extra_requirements = {
 
 setup(
     author="Joshua Vendrow",
-    author_email="jvendrow@ucla.com",
+    author_email="jvendrow@ucla.edu",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Science/Research ",
