@@ -32,7 +32,7 @@ dev_requirements = [
     "wheel>=0.33.1",
 ]
 
-requirements = []
+requirements = ["numpy"]
 
 extra_requirements = {
     "test": test_requirements,
