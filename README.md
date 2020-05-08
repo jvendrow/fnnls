@@ -22,10 +22,12 @@ you through the process.
 
 ## Quick Start
 ```python
->>> from fnnls import Example
->>> a = Example()
->>> a.get_value()
-10
+>>> from fnnls import fnnls
+>>> A = np.abs(np.random.rand(5,10)) 
+>>> b = np.abs(np.random.rand(5))
+>>> fnnls(A,b)
+[array([0.08743951, 0.        , 0.        , 0.        , 0.00271862,
+       0.        , 0.        , 0.01767932, 0.        , 0.28705341]), 0.07496726413383449]
 
 ```
 
