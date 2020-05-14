@@ -28,7 +28,7 @@ Fnnls is a python package that offers a fast algorithm for solving the nonnegati
 Given a matrix $\mathbf{Z} \in \mathbb{R}^{mxn}$ and a vector $\mathbf{x} \in \mathbb{R}^{n}$ the goal of nonnegative least square is find
 $$\min_{\mathbf{d}} ||\mathbf{y} - \mathbf{Zd}|| \textrm{ subject to } \mathbf{d} \ge 0.$$
 
-The fnnls algorithm improves the complexity of computation by precomputing the values of $\mathbf{Z^TZ}$ and  $\mathbf{Z^Tx}$ and using them throughout the algorithm. If we assume that $\textbf{Z}$ is tall, so $m \gg l,$ then this precomputation significantly decreases the computational complexity by replacing matrix and vector multiplications with computations of a small dimension. 
+The fnnls algorithm improves the complexity of computation by precomputing the values of $\mathbf{Z^TZ}$ and  $\mathbf{Z^Tx}$ and using them throughout the algorithm. If we assume that $\textbf{Z}$ is tall, so $m \gg n,$ then this precomputation significantly decreases the computational complexity by replacing matrix and vector multiplications with computations of a small dimension. 
 
 The nonnegative least square problem has many applications to problems in the field of applied math and specifically as a subproblem for various matrix factorization algorithms, including nonnegative matrix/tensor factorization (NMF and NTF) and tensor rank decomposition (canonical polyadic decomposition) [@bro1997parafac].
 
