@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.linalg.lstsq(A,b,rcond=None)[0]):
     """
@@ -186,3 +187,27 @@ def fix_constraint(ZTZ, ZTx, s, d, P, lstsq = lambda A, b: np.linalg.lstsq(A,b,r
 
     return s, d, P
 
+def RK(A,b,k=100):
+    """
+    Function that runs k iterations of randomized Kaczmarz iterations (with uniform sampling).
+
+    Parameters
+    ----------
+    A : NumPy array
+        The measurement matrix (size m x n).
+    b : NumPy array
+        The measurement vector (size m x 1).
+        
+    Returns
+    -------
+    x : NumPy array
+        The approximate solution 
+    """ 
+    m, n = np.shape(A)
+    x = np.zeros([n,1])
+
+    for i in range(k):
+        ind = random.choice(range(n))
+        x = x + np.transpose(A[[ind],:])*(b[[ind],0] - A[[ind],:] @ x)/(np.linalg.norm(A[[ind],:])**2)
+
+    return x
