@@ -3,7 +3,13 @@
 [![PyPI Version](https://img.shields.io/pypi/v/fnnls.svg)](https://pypi.org/project/fnnls/)
 [![Supported Python Versions](https://img.shields.io/pypi/pyversions/fnnls.svg)](https://pypi.org/project/fnnls/)
 
-Fast Nonnegative Least Squares
+An implementation of the Fast Nonnegative Least Squares (fnnls) algorithm presented in the paper "A fast non‐negativity‐constrained least squares algorithm" by Bro and Jung:
+
+Bro, Rasmus, and Sijmen De Jong. "A fast non‐negativity‐constrained least squares algorithm." _Journal of Chemometrics: A Journal of the Chemometrics Society_ 11, no. 5 (1997): 393-401.
+
+Given a matrix Z and vector x, this algorithm aims to find the optimal d to minimize || x - Zd || subject to d >= 0.
+
+The fnnls algorithm is most comparable to the Lawson and Hanson algorithm for nonegative least squares published in 1974, which is the standard algorithm used by the SciPy library. **In practice, the algorithm converges to the nonnegative least square solution faster than the SciPy implementation of the Lawson and Hanson algorithm for tall and large matrices.** 
 
 ---
 
@@ -34,7 +40,9 @@ you through the process.
 ## Citing
 If you use our work in an academic setting, please cite our paper:
 
-
+## Authors
+* Joshua Vendrow
+* Jamie Haddock
 
 ## Development
 See [CONTRIBUTING.md](CONTRIBUTING.md) for information related to developing the code.
