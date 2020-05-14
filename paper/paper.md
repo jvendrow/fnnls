@@ -1,4 +1,3 @@
-﻿
 ---
 title: 'fnnls: An implementation of Fast Nonnegative Least Squares'
 tags:
