@@ -203,11 +203,11 @@ def RK(A,b,k=100):
     x : NumPy array
         The approximate solution 
     """ 
+
     m, n = np.shape(A)
-    x = np.zeros([n,1])
+    x = np.zeros([n])
 
     for i in range(k):
         ind = random.choice(range(n))
-        x = x + np.transpose(A[[ind],:])*(b[[ind],0] - A[[ind],:] @ x)/(np.linalg.norm(A[[ind],:])**2)
-
+        x = x + np.transpose(A[ind,:])*(b[ind] - A[ind,:] @ x)/(np.linalg.norm(A[ind,:])**2)
     return x
