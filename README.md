@@ -26,23 +26,41 @@ This is the preferred method to install fnnls, as it will always install the mos
 If you don't have [pip](https://pip.pypa.io) installed, these [installation instructions](http://docs.python-guide.org/en/latest/starting/installation/) can guide
 you through the process.
 
-## Quick Start
+## Usage
+
+**Quick Start**
+
+It's easy to directly a nonnegative least squares task with `fnnls`: 
 ```python
+>>> import numpy as np
 >>> from fnnls import fnnls
->>> A = np.abs(np.random.rand(5,10)) 
->>> b = np.abs(np.random.rand(5))
->>> fnnls(A,b)
-[array([0.08743951, 0.        , 0.        , 0.        , 0.00271862,
-       0.        , 0.        , 0.01767932, 0.        , 0.28705341]), 0.07496726413383449]
+>>> np.random.seed(1)
+>>> Z = np.abs(np.random.rand(5,10)) 
+>>> x = np.abs(np.random.rand(5))
+>>> fnnls(Z,x)
+[array([0.  , 0.  , 0.  , 0.49507457, 0.  ,
+0.  , 0.10518829, 0.  , 0.  , 0.  ]), 0.29527550874513586]
 
 ```
+**Custom least squared functions:**
 
-## Citing
-If you use our work in an academic setting, please cite our paper:
+The fast nonegative least square algorithm solves an unconstrained least squares task for every iteration. By default, we use numpy.linalg.lstsq. 
+
+We provide more custom functions to solve the least squares algorithm, and give users the ability to define and use their own functions. 
+```python
+>>> import numpy as np
+>>> from fnnls import fnnls
+>>> from fnnls import RK #the Randomized Karzmarz method
+>>> np.random.seed(1)
+>>> RK1 = lambda Z, x: RK(Z,x,random_state=1) #Set random state
+>>> Z = np.abs(np.random.rand(5,10)) 
+>>> x = np.abs(np.random.rand(5))
+>>> fnnls(Z,x,lstsq=RK1)
+[array([0.  , 0.  , 0.  , 0.22992788, 0.  ,
+0.19111572, 0.15289165, 0.10472243, 0.  , 0.  ]), 0.3198075779021192]
+```
+Note that to set a random state above for RK, we had to define a new function RK1.
 
 ## Authors
 * Joshua Vendrow
 * Jamie Haddock
-
-## Development
-See [CONTRIBUTING.md](CONTRIBUTING.md) for information related to developing the code.

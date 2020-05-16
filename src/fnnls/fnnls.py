@@ -1,5 +1,4 @@
 import numpy as np
-import random
 
 def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.linalg.lstsq(A,b,rcond=None)[0]):
     """
@@ -86,7 +85,7 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.lina
 
     #B1
     while (not np.all(P))  and np.max(w[~P]) > tolerance:
-
+        
         current_P = P.copy() #make copy of passive set to check for change at end of loop
 
         #B2 + B3 
@@ -96,13 +95,12 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.lina
         s[P] = lstsq((ZTZ)[P][:,P], (ZTx)[P])
 
         #C1
-        while (not np.any(P)) and np.min(s[P]) <= tolerance:
+        while np.any(P) and np.min(s[P]) <= tolerance:
 
-            s, d, P = fix_constraint(ZTZ, ZTx, s, d, P, lstsq)
+            s, d, P = fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq)
 
         #B5
         d = s.copy() 
-
         #B6
         w = ZTx - (ZTZ) @ d
 
@@ -121,7 +119,7 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.lina
     return [d, res]
 
 
-def fix_constraint(ZTZ, ZTx, s, d, P, lstsq = lambda A, b: np.linalg.lstsq(A,b,rcond=None)[0]):
+def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, b: np.linalg.lstsq(A,b,rcond=None)[0]):
     """
     The inner loop of the Fast Non-megative Least Squares Algorithm described
     in the paper "A fast non-negativity-constrained least squares algorithm"
@@ -152,6 +150,10 @@ def fix_constraint(ZTZ, ZTx, s, d, P, lstsq = lambda A, b: np.linalg.lstsq(A,b,r
     P: Numpy array, dtype=np.bool
         The current passive set, which comtains the indices
         that are not fixed at the value zero. 
+
+    tolerance: float
+        A tolerance, below which values are considered to be
+        0, allowing for more reasonable convergence.
 
     lstsq: function
         By default, numpy.linalg.lstsq with rcond=None.
@@ -187,7 +189,7 @@ def fix_constraint(ZTZ, ZTx, s, d, P, lstsq = lambda A, b: np.linalg.lstsq(A,b,r
 
     return s, d, P
 
-def RK(A,b,k=100):
+def RK(A,b,k=100, random_state=None):
     """
     Function that runs k iterations of randomized Kaczmarz iterations (with uniform sampling).
 
@@ -203,11 +205,14 @@ def RK(A,b,k=100):
     x : NumPy array
         The approximate solution 
     """ 
+    
+    if random_state != None:
+        np.random.seed(random_state)
 
     m, n = np.shape(A)
     x = np.zeros([n])
 
     for i in range(k):
-        ind = random.choice(range(n))
+        ind = np.random.choice(range(n))
         x = x + np.transpose(A[ind,:])*(b[ind] - A[ind,:] @ x)/(np.linalg.norm(A[ind,:])**2)
     return x
