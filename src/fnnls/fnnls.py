@@ -52,7 +52,8 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.lina
         raise ValueError("Expected values between 0 and Z.shape[1], but P_initial has max value {}".format(np.max(P_initial)))
     if np.any(P_initial < 0):
         raise ValueError("Expected values between 0 and Z.shape[1], but P_initial has min value {}".format(np.min(P_initial)))
-
+    if P_initial.dtype != np.dtype('int64') and P_initial.dtype != np.dtype('int32') :
+        raise TypeError("Expected type int64 or int32, but P_initial is type {}".format(P_initial.dtype))
     if x.shape[0] != m:
         raise ValueError("Incompatable dimensions. The first dimension of Z should match the length of x, but Z is of shape {} and x is of shape {}".format(Z.shape, x.shape))
 
@@ -83,7 +84,14 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.lina
     #Count of amount of consecutive times set P has remained unchanged
     no_update = 0
 
+
     #B1
+
+    if P_initial.shape[0] != 0:
+
+        s[P] = lstsq((ZTZ)[P][:,P], (ZTx)[P])
+        d = s.clip(min=0)
+
     while (not np.all(P))  and np.max(w[~P]) > tolerance:
         
         current_P = P.copy() #make copy of passive set to check for change at end of loop

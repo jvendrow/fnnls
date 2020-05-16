@@ -61,6 +61,31 @@ We provide more custom functions to solve the least squares algorithm, and give 
 ```
 Note that to set a random state above for RK, we had to define a new function RK1.
 
+**Initializing the Passive Set**
+
+The fast nonnegative least squares algorithm is a combinatorial algorithm that continually updates a passive set P to indicate the support (non-zero elements) of the solution at the current iteration. Often, it is possible to have knowledge of an estimate for the support of the solution, which can improve the efficiency of the algorithm. We allow users to choose to input an estimate for the support.
+```python
+>>> import numpy as np
+>>> from fnnls import fnnls
+>>> from time import time
+>>> np.random.seed(1)
+>>> Z = np.abs(np.random.rand(100,100))
+>>> x = np.abs(np.random.rand(100))
+>>> start = time()
+>>> d, res = fnnls(Z,x) #run with no initial support
+>>> end = time()
+>>> end-start #time without initial support
+0.0065343379974365234
+>>> support = np.nonzero(d)[0] #find the support of the solution
+>>> start = time()
+>>> d_sup, res = fnnls(Z, x, P_initial = support) #run with initial support
+>>> end = time()
+>>> end-start #time with initial support
+0.0012061595916748047
+>>> np.array_equal(d,d_sup) #check the two solutions are equal
+True
+```
+
 ## Authors
 * Joshua Vendrow
 * Jamie Haddock
