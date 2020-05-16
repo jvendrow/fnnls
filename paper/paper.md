@@ -11,7 +11,7 @@ authors:
     orcid: 0000-0002-1041-5782
     affiliation: 1
   - name: Jamie Haddock
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-1449-2574
     affiliation: 1
 affiliations:
  - name: Department of Mathematics, University of California, Los Angeles
