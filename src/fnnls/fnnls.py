@@ -197,6 +197,35 @@ def RK(A,b,k=100):
         The measurement matrix (size m x n).
     b : NumPy array
         The measurement vector (size m x 1).
+    k : int_, optional
+        Number of iterations (default is 100).
+        
+    Returns
+    -------
+    x : NumPy array
+        The approximate solution 
+    """ 
+    m, n = np.shape(A)
+    x = np.zeros([n,1])
+
+    for i in range(k):
+        ind = random.choice(range(m))
+        x = x + np.transpose(A[[ind],:])*(b[[ind],0] - A[[ind],:] @ x)/(np.linalg.norm(A[[ind],:])**2)
+
+    return x
+
+def RGS(A,b,k=100):
+    """
+    Function that runs k iterations of randomized Gauss-Seidel iterations (with uniform sampling).
+
+    Parameters
+    ----------
+    A : NumPy array
+        The measurement matrix (size m x n).
+    b : NumPy array
+        The measurement vector (size m x 1).
+    k : int_, optional
+        Number of iterations (default is 100).
         
     Returns
     -------
@@ -208,6 +237,6 @@ def RK(A,b,k=100):
 
     for i in range(k):
         ind = random.choice(range(n))
-        x = x + np.transpose(A[[ind],:])*(b[[ind],0] - A[[ind],:] @ x)/(np.linalg.norm(A[[ind],:])**2)
+        x[[ind],0] = x[[ind],0] + np.transpose(A[:,[ind]]) @ (b - A @ x)/(np.linalg.norm(A[:,[ind]])**2)
 
     return x
