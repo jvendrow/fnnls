@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import pytest
+
 import numpy as np
 import matplotlib.pyplot as plt
-
 from scipy.optimize import nnls
-from fnnls import fnnls
 from time import time
+
+from fnnls.fnnls import fnnls
 
 
 
@@ -126,6 +128,7 @@ class nnls_testing():
         plt.show()
 
 
+fnnls_rk = lambda A, b: fnnls(A, b, lstsq=lambda A, b: RK(A,b,1))
 
 testing = nnls_testing()
 

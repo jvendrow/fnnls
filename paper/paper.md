@@ -4,7 +4,7 @@ title: 'fnnls: An implementation of Fast Nonnegative Least Squares'
 tags:
   - Nonnegative least square
   - Optimization
-  - Matrix
+  - Machine Learning
   - Python
 authors:
   - name: Joshua Vendrow
@@ -18,6 +18,7 @@ affiliations:
    index: 1
 date: 18 May 2020
 bibliography: paper.bib
+
 ---
 
 
