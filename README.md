@@ -30,7 +30,7 @@ you through the process.
 
 **Quick Start**
 
-It's easy to directly a nonnegative least squares task with `fnnls`: 
+It's easy to directly solve a nonnegative least squares task with `fnnls`: 
 ```python
 >>> import numpy as np
 >>> from fnnls import fnnls
