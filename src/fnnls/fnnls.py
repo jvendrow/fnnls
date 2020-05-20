@@ -1,6 +1,5 @@
 import numpy as np
-from time import time
-from scipy import linalg
+
 def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.linalg.inv(A).dot(x)):
     """
     Implementation of the Fast Non-megative Least Squares Algorithm described
