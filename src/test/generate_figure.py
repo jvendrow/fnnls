@@ -69,7 +69,7 @@ class nnls_comparison():
 
                     #Measure the speed of running the optimizer
                     start = time()
-                    
+
                     [d, res] = optimizer(Z, x)
 
                     end = time()
@@ -112,7 +112,7 @@ class nnls_comparison():
         for nnls_time in self.nnls_times:
             plt.plot(self.dimensions, nnls_time)
 
-        plt.xlabel("dimension")
+        plt.xlabel("Dimension")
         plt.ylabel("time (s) for " +  str(self.repetitions) + " runs")
         plt.legend(self.names)
 
@@ -129,7 +129,7 @@ class nnls_comparison():
         for nnls_res in self.nnls_res:
             plt.plot(self.dimensions, [i / self.repetitions for i in nnls_res])
 
-        plt.xlabel("dimension")
+        plt.xlabel("Dimension")
         plt.ylabel("Average Residual")
         plt.legend(self.names)
 
@@ -157,35 +157,42 @@ class nnls_comparison():
 
 
 sparsity = 0.01
-SPARSE = True
+SPARSE = False
 
 #Declare generator, either sparse or dense
-if SPARSE:
-    generator = lambda m, n: sparse.random(m, n, sparsity).toarray()
-
-else:
-    generator = np.random.randn
-
+generator_sparse = lambda m, n: sparse.random(m, n, sparsity).toarray()
+generator_gaussian = np.random.randn
 
 
 #Declare parameters for testing
-repetitions = 25
+repetitions = 100
 dimensions = np.arange(10, 411, 40)
-#dimensions = np.asarray([200])
 optimizers = [optimize.nnls, fnnls]
 names = ["scipy.optimize.nnls", "fnnls"]
 
 #run comparison tests
-testing = nnls_comparison()
-testing.test(repetitions, dimensions, optimizers, names, generator=generator, verbose=True)
+testing_dense = nnls_comparison()
+testing_dense.test(repetitions, dimensions, optimizers, names, generator=generator_gaussian, verbose=True)
+#run comparison tests
+testing_sparse = nnls_comparison()
+testing_sparse.test(repetitions, dimensions, optimizers, names, generator=generator_sparse, verbose=True)
 
+times_dense = testing_dense.nnls_times
+times_sparse = testing_sparse.nnls_times
 
 #Calcualte differences between residuals, should be VERY small
-differences = testing.diff_residuals()
+differences = testing_dense.diff_residuals()
 print("Array of difference between solutions: {}".format(differences))
-print(differences)
+differences = testing_sparse.diff_residuals()
+print("Array of difference between solutions: {}".format(differences))
 
-#plot the speeds and residuals
-testing.plot_times()
-testing.plot_residuals()
+plt.plot(dimensions, times_dense[0], 'C0--')
+plt.plot(dimensions, times_dense[1], 'C0-')
+plt.plot(dimensions, times_sparse[0], 'C1--')
+plt.plot(dimensions, times_sparse[1], 'C1-')
 
+plt.xlabel("Dimension")
+plt.ylabel("Time (s) for " +  str(repetitions) + " runs")
+plt.legend(["scipy.optimize.nnls (dense)", "fnnls (dense)", "scipy.optimize.nnls (sparse)", "fnnls (sparse)"])
+
+plt.show()

@@ -1,6 +1,7 @@
 import numpy as np
-
-def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.linalg.lstsq(A,b,rcond=None)[0]):
+from time import time
+from scipy import linalg
+def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.linalg.inv(A).dot(x)):
     """
     Implementation of the Fast Non-megative Least Squares Algorithm described
     in the paper "A fast non-negativity-constrained least squares algorithm"
@@ -84,15 +85,15 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.lina
     #Count of amount of consecutive times set P has remained unchanged
     no_update = 0
 
-
-    #B1
-
+    #Extra loop in case a support is set to update s and d
     if P_initial.shape[0] != 0:
 
         s[P] = lstsq((ZTZ)[P][:,P], (ZTx)[P])
         d = s.clip(min=0)
 
+    #B1
     while (not np.all(P))  and np.max(w[~P]) > tolerance:
+        iters += 1
         
         current_P = P.copy() #make copy of passive set to check for change at end of loop
 
@@ -112,8 +113,7 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.lina
         #B6
         w = ZTx - (ZTZ) @ d
 
-
-        #check of there has been a check to the passive set
+        #check if there has been a change to the passive set
         if(np.all(current_P == P)): 
             no_update += 1
         else:
@@ -123,11 +123,11 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.lina
             break
 
     res = np.linalg.norm(x - Z@d) #Calculate residual loss ||x - Zd||
-       
+
     return [d, res]
 
 
-def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, b: np.linalg.lstsq(A,b,rcond=None)[0]):
+def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, x: np.linalg.inv(A).dot(x)):
     """
     The inner loop of the Fast Non-megative Least Squares Algorithm described
     in the paper "A fast non-negativity-constrained least squares algorithm"
