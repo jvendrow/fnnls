@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#Code to generate the figure from the paper
+
 import pytest
 
 import numpy as np
