@@ -92,7 +92,6 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.lina
 
     #B1
     while (not np.all(P))  and np.max(w[~P]) > tolerance:
-        iters += 1
         
         current_P = P.copy() #make copy of passive set to check for change at end of loop
 
