@@ -18,7 +18,7 @@ The fnnls algorithm is most comparable to the Lawson and Hanson algorithm for no
 To install fnnls, run this command in your terminal:
 
 ```bash
-$ pip install -U fnnls
+$ pip install fnnls
 ```
 
 This is the preferred method to install fnnls, as it will always install the most recent stable release.
