@@ -16,7 +16,7 @@ authors:
 affiliations:
  - name: Department of Mathematics, University of California, Los Angeles
    index: 1
-date: 18 May 2020
+date: 20 May 2020
 bibliography: paper.bib
 
 ---
@@ -24,27 +24,28 @@ bibliography: paper.bib
 
 # Summary
 
-`fnnls` is a python package that offers a fast algorithm for solving the nonnegative least square problem. The Fast Nonnegative Least Squares (fnnls) algorithm was first presented in the paper "A fast non‐negativity‐constrained least squares algorithm" [@bro1997fast]. 
+`fnnls` is a Python package that offers a fast algorithm for solving the nonnegative least squares problem. The Fast Nonnegative Least Squares (fnnls) algorithm was first presented in the paper "A fast non‐negativity‐constrained least squares algorithm" [@bro1997fast]. This algorithm exploits speed-up opportunities and improves upon the nonnegative least squares active-set algorithm of [@lawson1995solving].
 
-Given a matrix $\mathbf{Z} \in \mathbb{R}^{mxn}$ and a vector $\mathbf{x} \in \mathbb{R}^{n}$ the goal of nonnegative least square is to find
-$$\min_{\mathbf{d}} ||\mathbf{x} - \mathbf{Zd}|| \textrm{ subject to } \mathbf{d} \ge 0.$$
+Given a matrix $\mathbf{Z} \in \mathbb{R}^{m \times n}$ and a vector $\mathbf{x} \in \mathbb{R}^{n}$ the goal of nonnegative least squares is to find
+$$\min_{\mathbf{d} \in \mathbb{R}^m} ||\mathbf{x} - \mathbf{Zd}|| \textrm{ subject to } \mathbf{d} \ge 0.$$
 
-The fnnls algorithm improves the complexity of computation by precomputing the values of $\mathbf{Z^TZ}$ and  $\mathbf{Z^Tx}$ and using them throughout the algorithm. If we assume that $\textbf{Z}$ is tall, so $m \gg n,$ then this precomputation significantly decreases the computational complexity by replacing matrix and vector multiplications with computations of a smaller dimension. 
+The fnnls algorithm improves upon the computational effort of [@lawson1995solving] by precomputing the values of $\mathbf{Z^{\top}Z}$ and  $\mathbf{Z^{\top}x}$ and using them throughout the algorithm. If we assume that $\textbf{Z}$ is tall $(m \gg n)$ then this precomputation significantly decreases the computing time by replacing matrix and vector multiplications with computations of a smaller dimension. 
 
-The nonnegative least square problem has many applications to problems in the field of applied math and specifically as a subproblem for various matrix factorization algorithms, including nonnegative matrix/tensor factorization (NMF and NTF) and tensor rank decomposition (canonical polyadic decomposition) [@bro1997parafac].
+The nonnegative least squares problem has many applications in the field of applied math and specifically as a subproblem for various matrix and tensor factorization algorithms, including nonnegative matrix factorization (NMF) [@lee2001algorithms] and nonnegative tensor decomposition (NTD) [@bro1997parafac].
 
-`fnnls` is currently in use in ongoing research on nonnegative matrix factorization methods.
+`fnnls` is currently in use in ongoing research on NMF and NTD methods. Efficient solution of the nonnegative least squares problem is the backbone of the new algorithms for computing hierarchical  NMF and NTD models via a forward propagation and backpropagation procedure [@GHMNSWZ19; @WHZMNGS20Neural; @VHN20Neural].
 
 # Comparison to Other Algorithms
 
-The standard implementation for nonnegative least squares is the scipy.optimize.nnls function within the SciPy open-source Python library. SciPy uses an implementation of the Lawson and Hanson algorithm, which was first presented in 1974 [@lawson1995solving]. 
+The standard implementation for nonnegative least squares is the `scipy.optimize.nnls` function within the SciPy open-source Python library [@2020SciPy-NMeth]. SciPy uses an implementation of the Lawson and Hanson algorithm, which was first presented in 1974 [@lawson1995solving]. 
 
-Below, we test the efficiency and accuracy of `fnnls` against the SciPy nnls function. We measure the time taken for each method over 25 repeated runs on a gaussian random  $\mathbf{Z}$ and $\mathbf{x}$, generated seperately for each run. We graph the time consumption as a function of the size of the matrices. Here, a dimension of $n$ indicates that we generate $\mathbf{Z} \in \mathbb{R}^{10nxn}$  and $\mathbf{x} \in \mathbb{R}^{10n}$,  giving us a tall matrix. 
+Below, we test the efficiency and accuracy of `fnnls` against the SciPy `scipy.optimize.nnls` function. We measure the time taken by each method over 100 runs each on random Gaussian and sparse uniform data generated separately for each run. In each run, we randomly generate $\mathbf{Z}$ and $\mathbf{x}$ and record the time spent by `fnnls` and `scipy.optimize.nnls`. For runs on Gaussian data, $\mathbf{Z}$ and $\mathbf{x}$ are generated with the `numpy.random.rand` function which draws each entry i.i.d. from the standard normal distribution, taking the absolute value of the outcome [@oliphant2006guide]. For the runs on sparse uniform data, $\mathbf{Z}$ and $\mathbf{x}$ are generated with the `scipy.sparse.random` function which constructs a matrix with density $0.1$, where the nonzero entries are drawn i.i.d. from the uniform distribution $[0,1)$. We graph the time consumption versus the size of the matrices. Here, dimension $n$ indicates that we generate $\mathbf{Z} \in \mathbb{R}^{10n \times n}$  and $\mathbf{x} \in \mathbb{R}^{10n}$,  yielding a tall matrix. 
 
-![image](https://github.com/jvendrow/fnnls/blob/master/paper/time_nnls.png?raw=true)
-**Fig. 1:**  The total running time over 25 runs at each dimension when running each algorithm on random data for varying dimension. We see that our method consumed significantly less time at higher dimensions, indicating a better complexity in terms of the size of the matrix. 
+![image](https://github.com/jvendrow/fnnls/blob/master/paper/nnls_comparison.png?raw=true)
+**Fig. 1:**  The total running time over 100 runs of each algorithm on random Gaussian data (dense) and random uniform sparse data (sparse) of varying dimension. `fnnls` required significantly less time at higher dimensions for both types of matrices. 
 
-![image](https://github.com/jvendrow/fnnls/blob/master/paper/residual_nnls.png?raw=true)
-**Fig. 2:** The average residual produced when running each algorithm on random data for varying dimension. We see that there is no visible difference in the results produced by these two methods. 
+Let $\mathbf{d_f}$ and $\mathbf{d_n}$ be the solution vectors produced by `fnnls` and the SciPy `nnls` function, respectively. Then we compute the relative error between the solutions as 
+$$\dfrac{||\mathbf{d_f}-\mathbf{d_n}||_2} {||\mathbf{d_n}||_2}.$$
+The average relative error between $\mathbf{d_f}$ and $\mathbf{d_n}$ across the 100 runs did not exceed $10^{-12}$ for any dimension of the Gaussian data, and did not exceed $10^{-14}$ for any dimension of the sparse uniform data. 
 
 # References

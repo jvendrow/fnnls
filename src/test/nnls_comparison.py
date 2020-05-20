@@ -5,20 +5,21 @@ import pytest
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import nnls
+from scipy import optimize
+from scipy import sparse
 from time import time
 
 from fnnls.fnnls import fnnls
 
 
 
-class nnls_testing():
+class nnls_comparison():
 
     def __init__(self):
 
         return
 
-    def test(self, repetitions, dimensions, optimizers, names, verbose=True):
+    def test(self, repetitions, dimensions, optimizers, names, generator=np.random.rand, verbose=True):
         """
         Measures the speed of each optimizer at each dimensions,
         averaged over repetitions
@@ -45,54 +46,61 @@ class nnls_testing():
 
         nnls_times = []
         nnls_res = []
+        nnls_d = []
 
-        for d in dimensions:
+        for dim in dimensions:
 
+            matrices = [np.abs(generator(dim*10, dim)) for _ in range(repetitions)]
+            vectors = [np.abs(generator(dim*10, 1)).reshape((dim*10)) for _ in range(repetitions)]
 
             for index, optimizer in enumerate(optimizers):
 
                 time_total = 0
                 res_total = 0
+                ds = []
 
                 for i in range(repetitions):
 
                     #define matrix A and vector x
                     #------------------------------
 
-                    A = np.abs(np.random.rand(d*10, d)) * 100
-
-                    x = np.abs(np.random.rand(d*10)) * 100
+                    Z = matrices[i]
+                    x = vectors[i]
 
                     #Measure the speed of running the optimizer
                     start = time()
 
-                    [s, res] = optimizer(A, x)
+                    [d, res] = optimizer(Z, x)
 
                     end = time()
                 
                     time_total += end - start
                     res_total += res
+                    ds.append(d)
 
                 #Print and store results
                 #-----------------------
                 if verbose:
-                    print(d)
+                    print(dim)
                     print(names[index] + ": " + str(time_total))
                     print(names[index] + ": " + str(res_total))
 
-                if d == dimensions[0]:
+                if dim == dimensions[0]:
                     nnls_times.append([time_total])
                     nnls_res.append([res_total])
+                    nnls_d.append([ds])
 
                 else:
                     nnls_times[index].append(time_total)
                     nnls_res[index].append(res_total)
+                    nnls_d[index].append(ds)
 
             self.repetitions = repetitions
             self.dimensions = dimensions
             self.names = names
             self.nnls_times = nnls_times
             self.nnls_res = nnls_res
+            self.nnls_d = nnls_d
 
     def plot_times(self):
         """
@@ -127,17 +135,55 @@ class nnls_testing():
 
         plt.show()
 
+    def diff_residuals(self):
+        """
+        Calculates max difference between residuals of
+        the first two optimization functions
+        """
 
-fnnls_rk = lambda A, b: fnnls(A, b, lstsq=lambda A, b: RK(A,b,1))
+        differences = []
+        for i in range(len(self.nnls_d[0])):
 
-testing = nnls_testing()
+            residuals_1 = self.nnls_d[0][i]
+            residuals_2 = self.nnls_d[1][i]
 
+            avg_diff = 0
+            for j in range(len(residuals_1)):
+                avg_diff += np.linalg.norm(residuals_1[j] - residuals_2[j]) / np.linalg.norm(residuals_1[j])
+            differences.append(avg_diff / len(residuals_1))
+            
+        return differences
+
+
+
+sparsity = 0.01
+SPARSE = False
+
+#Declare generator, either sparse or dense
+if SPARSE:
+    generator = lambda m, n: sparse.random(m, n, sparsity).toarray()
+
+else:
+    generator = np.random.rand
+
+
+#Declare parameters for testing
 repetitions = 25
-dimensions = np.arange(10, 350, 40)
-optimizers = [nnls, fnnls]
+dimensions = np.arange(10, 311, 40)
+optimizers = [optimize.nnls, fnnls]
 names = ["scipy.optimize.nnls", "fnnls"]
 
-testing.test(repetitions, dimensions, optimizers, names, verbose=True)
+#run comparison tests
+testing = nnls_comparison()
+testing.test(repetitions, dimensions, optimizers, names, generator=generator, verbose=True)
 
+
+#Calcualte differences between residuals, should be VERY small
+differences = testing.diff_residuals()
+print("Array of difference between solutions: {}".format(differences))
+print(differences)
+
+#plot the speeds and residuals
 testing.plot_times()
 testing.plot_residuals()
+

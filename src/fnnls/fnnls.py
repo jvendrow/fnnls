@@ -63,7 +63,7 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.lina
 
     #Declaring constants for tolerance and max repetitions
     epsilon = 2.2204e-16
-    tolerance = epsilon * np.linalg.norm(ZTZ, ord=1) * n
+    tolerance = epsilon * n
 
     #number of contsecutive times the set P can remain unchanged loop until we terminate
     max_repetitions = 5
@@ -123,7 +123,7 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, b: np.lina
             break
 
     res = np.linalg.norm(x - Z@d) #Calculate residual loss ||x - Zd||
-    
+       
     return [d, res]
 
 
@@ -209,6 +209,8 @@ def RK(A,b,k=100, random_state=None):
         The measurement vector (size m x 1).
     k : int_, optional
         Number of iterations (default is 100).
+    random_state: int, optional
+        Random state for NumPy random sampling 
         
     Returns
     -------
@@ -241,17 +243,24 @@ def RGS(A,b,k=100):
         The measurement vector (size m x 1).
     k : int_, optional
         Number of iterations (default is 100).
+    random_state: int, optional
+        Random state for NumPy random sampling
         
     Returns
     -------
     x : NumPy array
         The approximate solution 
     """ 
+
+    if random_state != None:
+        np.random.seed(random_state)
+
     m, n = np.shape(A)
-    x = np.zeros([n,1])
+    x = np.zeros([n])
 
     for i in range(k):
         ind = np.random.choice(range(n))
-        x[[ind],0] = x[[ind],0] + np.transpose(A[:,[ind]]) @ (b - A @ x)/(np.linalg.norm(A[:,[ind]])**2)
+        x[ind] = x[ind] + np.transpose(A[:,ind]) @ (b - A @ x)/(np.linalg.norm(A[:,ind])**2)
+
 
     return x
