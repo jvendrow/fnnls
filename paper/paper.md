@@ -51,4 +51,8 @@ Let $\mathbf{d_f}$ and $\mathbf{d_n}$ be the solution vectors produced by `fnnls
 $$\dfrac{||\mathbf{d_f}-\mathbf{d_n}||_2} {||\mathbf{d_n}||_2}.$$
 The average relative error between $\mathbf{d_f}$ and $\mathbf{d_n}$ across the 100 runs did not exceed $10^{-14}$ for any dimension of the Gaussian data or the sparse uniform data. 
 
+# Acknowledgements
+
+The authors were partially supported by NSF CAREER DMS-1348721 and NSF BIGDATA 1740325. They would also like to thank Jacob Moorman for excellent advice and guidance.
+
 # References
