@@ -82,6 +82,6 @@ setup(
     url="https://github.com/jvendrow/fnnls",
     # Do not edit this string manually, always use bumpversion
     # Details in CONTRIBUTING.rst
-    version="0.0.1",
+    version="1.0.0",
     zip_safe=False,
 )
