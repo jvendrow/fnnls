@@ -1,7 +1,3 @@
-<p align="center">
-<img width="500" src="https://raw.githubusercontent.com/jvendrow/fnnls/master/fnnls_logo.png?raw=true" alt="logo">
-</p>
-
 # fnnls
 
 [![PyPI Version](https://img.shields.io/pypi/v/fnnls.svg)](https://pypi.org/project/fnnls/)
