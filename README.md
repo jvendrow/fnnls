@@ -1,5 +1,5 @@
 <p align="center">
-<img width="600" src="https://raw.githubusercontent.com/jvendrow/fnnls/master/fnnls_logo.png?raw=true" alt="logo">
+<img width="500" src="https://raw.githubusercontent.com/jvendrow/fnnls/master/fnnls_logo.png?raw=true" alt="logo">
 </p>
 
 # fnnls
