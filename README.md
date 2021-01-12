@@ -6,6 +6,7 @@
 
 [![PyPI Version](https://img.shields.io/pypi/v/fnnls.svg)](https://pypi.org/project/fnnls/)
 [![Supported Python Versions](https://img.shields.io/pypi/pyversions/fnnls.svg)](https://pypi.org/project/fnnls/)
+[![Downloads](https://pepy.tech/badge/fnnls)](https://pepy.tech/project/fnnls)
 
 An implementation of the Fast Nonnegative Least Squares (fnnls) algorithm presented in the paper "A fast non‐negativity‐constrained least squares algorithm" by Bro and De Jung:
 
