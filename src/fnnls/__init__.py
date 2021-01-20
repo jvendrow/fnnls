@@ -13,3 +13,4 @@ __copyright__ = "Copyright (c) 2020, Joshua Vendrow"
 
 from .fnnls import fnnls
 from .fnnls import RK
+from .fnnls import RGS
