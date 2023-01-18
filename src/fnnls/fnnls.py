@@ -71,7 +71,7 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.lina
 
     # A1 + A2
     # P is a boolean array that represents the passive set
-    P = np.zeros(n, dtype=np.bool)
+    P = np.zeros(n, dtype=bool)
     P[P_initial] = True
 
     # A3
@@ -164,7 +164,7 @@ def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, x: np.linalg.
         The previous estimate of the solution that satisfies
         the nonnegativity contraint
 
-    P: Numpy array, dtype=np.bool
+    P: Numpy array, dtype=bool
         The current passive set, which comtains the indices
         that are not fixed at the value zero. 
 
@@ -185,7 +185,7 @@ def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, x: np.linalg.
     d: Numpy array
         The updated previous estimate, now as close
         as possible to s while maintaining nonnegativity.
-    P: Numpy array, dtype=np.bool
+    P: Numpy array, dtype=bool
         The updated passive set
         """ 
 
