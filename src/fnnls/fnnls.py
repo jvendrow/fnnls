@@ -1,6 +1,8 @@
 import numpy as np
 
-def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.linalg.inv(A).dot(x)):
+def fnnls(Z, x, P_initial = np.zeros(0, dtype=int),
+         lstsq = lambda A, x: np.linalg.inv(A).dot(x),
+         epsilon=np.finfo(float).eps):
     """
     Implementation of the Fast Non-megative Least Squares Algorithm described
     in the paper "A fast non-negativity-constrained least squares algorithm"
@@ -23,12 +25,16 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.lina
         By default, an empty array. An estimate for
         the indices of the support of the solution.
 
-        lstsq: function
+    lstsq: function
         By default, numpy.linalg.lstsq with rcond=None.
         Least squares function to use when calculating the
         least squares solution min_x ||Ax - b||.
         Must be of the form x = f(A,b).
 
+    epsilon: float
+        By default, it is np.finfo(float).eps
+        the numerical tolerance
+        
     Returns
     -------
     d: Numpy array
@@ -63,7 +69,6 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.lina
     ZTx = Z.T.dot(x)
 
     # Declaring constants for tolerance and max repetitions
-    epsilon = 2.2204e-16
     tolerance = epsilon * n
 
     # Number of contsecutive times the set P can remain unchanged loop until we terminate
