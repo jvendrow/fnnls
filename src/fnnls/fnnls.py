@@ -1,6 +1,8 @@
 import numpy as np
 
-def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.linalg.inv(A).dot(x)):
+def fnnls(Z, x, P_initial = np.zeros(0, dtype=int),
+         lstsq = lambda A, x: np.linalg.inv(A).dot(x),
+         epsilon=np.finfo(float).eps):
     """
     Implementation of the Fast Non-megative Least Squares Algorithm described
     in the paper "A fast non-negativity-constrained least squares algorithm"
@@ -9,7 +11,7 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.lina
     This algorithm seeks to find min_d ||x - Zd|| subject to d >= 0
 
     Some of the comments, such as "B2", refer directly to the steps of
-    the fnnls algorithm as presented in the paper by Bro et al. 
+    the fnnls algorithm as presented in the paper by Bro et al.
 
     Parameters
     ----------
@@ -23,11 +25,15 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.lina
         By default, an empty array. An estimate for
         the indices of the support of the solution.
 
-        lstsq: function
+    lstsq: function
         By default, numpy.linalg.lstsq with rcond=None.
         Least squares function to use when calculating the
-        least squares solution min_x ||Ax - b||. 
+        least squares solution min_x ||Ax - b||.
         Must be of the form x = f(A,b).
+
+    epsilon: float
+        By default, it is np.finfo(float).eps
+        the numerical tolerance
         
     Returns
     -------
@@ -35,7 +41,7 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.lina
         d is a nx1 vector
     """
 
-    # map Z, x, and P_initial to np arrays to standardize from any input 
+    # map Z, x, and P_initial to np arrays to standardize from any input
     Z, x, P_initial = map(np.asarray_chkfinite, (Z, x, P_initial))
 
     m, n = Z.shape
@@ -63,7 +69,6 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.lina
     ZTx = Z.T.dot(x)
 
     # Declaring constants for tolerance and max repetitions
-    epsilon = 2.2204e-16
     tolerance = epsilon * n
 
     # Number of contsecutive times the set P can remain unchanged loop until we terminate
@@ -98,10 +103,10 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.lina
 
     # B1
     while (not np.all(P))  and np.max(w[~P]) > tolerance:
-        
+
         current_P = P.copy() # Make copy of passive set to check for change at end of loop
 
-        # B2 + B3 
+        # B2 + B3
         # Move the element in active set with largest value
         # of w into the passive set
         P[np.argmax(w * ~P)] = True
@@ -118,12 +123,12 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: np.lina
             s, d, P = fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq)
 
         # B5
-        d = s.copy() 
+        d = s.copy()
         # B6
         w = ZTx - (ZTZ) @ d
 
         # Check if there has been a change to the passive set
-        if(np.all(current_P == P)): 
+        if(np.all(current_P == P)):
             no_update += 1
         else:
             no_update = 0
@@ -146,7 +151,7 @@ def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, x: np.linalg.
     nonnegativity contraint of the solution.
 
     Some of the comments, such as "B2", refer directly to the steps of
-    the fnnls algorithm as presented in the paper by Bro et al. 
+    the fnnls algorithm as presented in the paper by Bro et al.
 
     Parameters
     ----------
@@ -166,7 +171,7 @@ def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, x: np.linalg.
 
     P: Numpy array, dtype=bool
         The current passive set, which comtains the indices
-        that are not fixed at the value zero. 
+        that are not fixed at the value zero.
 
     tolerance: float
         A tolerance, below which values are considered to be
@@ -175,9 +180,9 @@ def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, x: np.linalg.
     lstsq: function
         By default, numpy.linalg.lstsq with rcond=None.
         Least squares function to use when calculating the
-        least squares solution min_x ||Ax - b||. 
+        least squares solution min_x ||Ax - b||.
         Must be of the form x = f(A,b).
-        
+
     Returns
     -------
     s: Numpy array
@@ -187,13 +192,13 @@ def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, x: np.linalg.
         as possible to s while maintaining nonnegativity.
     P: Numpy array, dtype=bool
         The updated passive set
-        """ 
+        """
 
     # C2
-    # find largest alpha such that d + alpha(s-d) 
+    # find largest alpha such that d + alpha(s-d)
     # is close to s but non-negative
     q = P * (s <= tolerance)
-    alpha = np.min(d[q] / (d[q] - s[q]))
+    alpha = np.nanmin(d[q] / (d[q] - s[q]))
 
     # C3
     # Set d as close to s as possible while maintaining non-negativity
@@ -226,14 +231,14 @@ def RK(A,b,k=100, random_state=None):
     k : int_, optional
         Number of iterations (default is 100).
     random_state: int, optional
-        Random state for NumPy random sampling 
-        
+        Random state for NumPy random sampling
+
     Returns
     -------
     x : NumPy array
-        The approximate solution 
-    """ 
-    
+        The approximate solution
+    """
+
     if random_state != None:
         np.random.seed(random_state)
 
@@ -266,12 +271,12 @@ def RGS(A,b,k=100, random_state=None):
         Number of iterations (default is 100).
     random_state: int, optional
         Random state for NumPy random sampling
-        
+
     Returns
     -------
     x : NumPy array
-        The approximate solution 
-    """ 
+        The approximate solution
+    """
 
     if random_state != None:
         np.random.seed(random_state)
